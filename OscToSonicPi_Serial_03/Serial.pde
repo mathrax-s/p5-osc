@@ -35,7 +35,7 @@ void findSerialPort() {
       unknown=1;
     }
   }
-  println(Serial.list()[portNumber]);
+  println(Serial.list());
 }
 
 
