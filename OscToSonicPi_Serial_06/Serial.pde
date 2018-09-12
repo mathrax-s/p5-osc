@@ -43,19 +43,18 @@ int x, y, z;
 
 void serialEvent (Serial p) {
 
-  String stringData=myPort.readStringUntil(10);
+  if (myPort.available()>0) {
+    int inByte = myPort.read();
 
-  if (stringData!=null) {
-    stringData=trim(stringData);
-    int microbitData[]=int(split(stringData, ','));
-
-    if (microbitData.length>2) {
-
-      x=microbitData[0];
-      y=microbitData[1];
-      //z=microbitData[2];
-
-      println(x + "\t"+y+ "\t"+z);
+    //println(inByte);
+    if (inByte=='0') {
+      sendOscSonicPi(12+72);
+    }
+    if (inByte=='1') {
+      sendOscSonicPi(14+72);
+    }
+    if (inByte=='2') {
+      sendOscSonicPi(16+72);
     }
   }
 }

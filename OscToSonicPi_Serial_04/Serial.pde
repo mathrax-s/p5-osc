@@ -49,13 +49,13 @@ void serialEvent (Serial p) {
     stringData=trim(stringData);
     int microbitData[]=int(split(stringData, ','));
 
-    if (microbitData.length>2) {
+    if (microbitData.length>3) {
 
       x=microbitData[0];
       y=microbitData[1];
-      //z=microbitData[2];
+      z=microbitData[2];
 
-      println(x + "\t"+y+ "\t"+z);
+      //println(x + "\t"+y+ "\t"+z);
     }
   }
 }
