@@ -17,7 +17,20 @@ void setup() {
 }
 
 void draw() {
+    if(saveOneFrame == true) {
+    beginRecord(PDF, "Line.pdf"); 
+  }
   drawMain();
+    if(saveOneFrame == true) {
+    endRecord();
+    saveOneFrame = false; 
+  }
+}
+
+import processing.pdf.*;
+boolean saveOneFrame = false;
+void mousePressed() {
+  saveOneFrame = true; 
 }
 
 
@@ -25,20 +38,28 @@ void draw() {
 void drawMain() {
   //背景を黒に
   background(0, 0, 0);
-  
+
   //白い鍵盤の表示
   for (int i=0; i<8; i++) {
     white_bright[i]*=0.9;
     fill(255*(1.0-white_bright[i]));
     rect(white_x[i], 0, 95, 400, 4);
   }
-  
+
   //黒い鍵盤の表示
   for (int i=0; i<5; i++) {
     black_bright[i]*=0.9;
     fill(55+200*black_bright[i]);
     rect(black_x[i], 0, 95, 240, 4);
   }
+  
+  //文字表示
+  textSize(24);
+  textAlign(RIGHT,CENTER);
+  fill(50);
+  rect(720,330,70,45,4);
+  fill(255);
+  text("OSC", 780,350);
 }
 
 
