@@ -1,24 +1,23 @@
-//Serial Communication
-
+//シリアル通信
 import processing.serial.*;
 Serial myPort;
 
-//USB-DEVICE
-String portName = "usb";
 int portNumber;
 
-
-void serialOpen() {
-  findSerialPort(); 
-  myPort = new Serial(this, Serial.list()[portNumber], 115200); 
-  myPort.setDTR(true);
-  delay(1000);
-  myPort.clear();
+//シリアルポートをオープンする
+void serialOpen(int num) {
+  if (num>=0) {
+    myPort = new Serial(this, Serial.list()[num], 115200);   
+    delay(1000);
+    myPort.clear();
+  }
 }
 
-void findSerialPort() {
-  String[] serialString;  
-  int serialCount = 0;
+String[] serialString;  
+int serialCount = 0;
+
+//シリアルポートをさがす
+void searchSerialPort() {
   boolean firstContact = false; 
   String serialCheck;  
   int serialIndex;  
@@ -27,35 +26,33 @@ void findSerialPort() {
   unknown=0;
   serialString = Serial.list();  
   for (int i = serialString.length - 1; i > 0; i--) {  
-    serialCheck = serialString[i];  
-    serialIndex = serialCheck.indexOf(portName);  
-    if (serialIndex > -1) {
-      portNumber = i;
-    } else {
-      unknown=1;
-    }
+    serialCheck = serialString[i];
   }
-  println(Serial.list());
+  //println(Serial.list());
+}
+
+//シリアルポートがオープンなら、クリアしてクローズする
+void serialClose() {
+  if (myPort!=null) {
+    myPort.clear();
+    myPort.stop();
+  }
 }
 
 
-int x, y, z;
-
+//データが送られてきたとき
 void serialEvent (Serial p) {
-
-  String stringData=myPort.readStringUntil(10);
+  //文字列の改行まで読み取る
+  String stringData=p.readStringUntil(10);
 
   if (stringData!=null) {
+    //受け取った文字列にある先頭と末尾の空白を取り除き、データだけにする
     stringData=trim(stringData);
-    int microbitData[]=int(split(stringData, ','));
-
-    if (microbitData.length>2) {
-
-      x=microbitData[0];
-      y=microbitData[1];
-      //z=microbitData[2];
-
-      println(x + "\t"+y+ "\t"+z);
-    }
+    
+    //「,」で区切られたデータ部分を分離してbufferに格納する
+    int buffer[] = int(split(stringData, ','));
+    
+    //bufferのデータをstoreData関数に送る(store_dataタブの関数）
+    storeData(buffer);
   }
 }

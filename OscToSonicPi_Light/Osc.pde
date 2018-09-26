@@ -9,9 +9,11 @@ void oscOpen() {
   myRemoteLocation = new NetAddress("localhost", 4559);
 }
 
-void sendOscSonicPi(int note){
+void sendOscSonicPi(int a, int b, int c){
   OscMessage myMessage = new OscMessage("/ch0/note");
-  myMessage.add(note); 
+  myMessage.add(a); 
+  myMessage.add(b); 
+  myMessage.add(c); 
   oscP5.send(myMessage, myRemoteLocation);
 }
 

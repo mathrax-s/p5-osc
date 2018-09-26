@@ -2,7 +2,7 @@ class Light {
   float x, y;
   float bright;
   color col;
-  
+
   Light(float xx, float yy, color c) {
     x=xx;  
     y=yy;
@@ -11,14 +11,15 @@ class Light {
   }
 
   void draw() {
-    bright*=0.9;
+    bright*=0.95;
     y=height*bright;
-    
-    fill(col,255*bright);
+    colorMode(HSB);
+    noStroke();
+    fill(col, 255*bright);
     rect(x, y, (width/10), height*bright);
   }
-  
-  void on(float xx, float yy, color c){
+
+  void on(float xx, float yy, color c) {
     x=xx;
     y=yy;
     col=c;
