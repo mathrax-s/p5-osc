@@ -1,7 +1,9 @@
-//ProcessingからSonicPiへOSC送信する
+//micro:bitとProcessingでシリアル通信し
+//SonicPiへOSC送信する
+
 boolean serialPortSelect;
 int selectSerialPortNum;
-boolean debug=false; //true or false
+boolean debug=false;
 
 //白い鍵盤の明るさとX座標
 float[] white_bright = new float[8];
@@ -68,9 +70,9 @@ void drawMain() {
   textSize(24);
   textAlign(RIGHT, CENTER);
   fill(50);
-  rect(720, 330, 70, 45, 4);
+  rect(640, 330, 150, 45, 4);
   fill(255);
-  text("OSC", 780, 350);
+  text("Serial+OSC", 780, 350);
 }
 
 
