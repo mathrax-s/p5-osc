@@ -1,4 +1,7 @@
 //ProcessingからSonicPiへOSC送信する
+boolean serialPortSelect;
+int selectSerialPortNum;
+boolean debug=false; //true or false
 
 //白い鍵盤の明るさとX座標
 float[] white_bright = new float[8];
@@ -12,25 +15,33 @@ int[] black_x = {50, 150, 350, 450, 550};
 void setup() {
   //画面サイズを800x600にする
   size(800, 400);
+  //シリアルポートを探す
+  searchSerialPort();
   //OSC通信を始める
   oscOpen();
 }
 
 void draw() {
-    if(saveOneFrame == true) {
-    beginRecord(PDF, "Line.pdf"); 
+  if (debug) {
+    drawMain();
+    return;
   }
-  drawMain();
-    if(saveOneFrame == true) {
-    endRecord();
-    saveOneFrame = false; 
+  //シリアルポートを選んでない場合
+  if (!serialPortSelect) {
+    //シリアルポート選択画面を表示
+    serialPortSelectScene();
+    return;
   }
-}
 
-import processing.pdf.*;
-boolean saveOneFrame = false;
-void mousePressed() {
-  saveOneFrame = true; 
+  //micro:bitからのデータが何かあれば、doMain()へ
+  if (microbitData!=null) {
+    drawMain();
+  } else {
+    //micro:bitからのデータが何もなければ「クリックして戻る」表示
+    background(0);
+    fill(255);
+    text("No data...\r\n Click and back to select serialport.", width/2, height/2);
+  }
 }
 
 
@@ -52,14 +63,14 @@ void drawMain() {
     fill(55+200*black_bright[i]);
     rect(black_x[i], 0, 95, 240, 4);
   }
-  
+
   //文字表示
   textSize(24);
-  textAlign(RIGHT,CENTER);
+  textAlign(RIGHT, CENTER);
   fill(50);
-  rect(720,330,70,45,4);
+  rect(720, 330, 70, 45, 4);
   fill(255);
-  text("OSC", 780,350);
+  text("OSC", 780, 350);
 }
 
 
@@ -119,5 +130,70 @@ void keyPressed() {
   if (key=='u') {
     black_bright[4]=1.0;
     sendOscSonicPi(82);  //SonicPiへOSC送信（oscタブ内）
+  }
+}
+
+//マウスクリックしたとき
+void mousePressed() {
+  //シリアルポート選択がまだの場合
+  if (!serialPortSelect) {
+    //シリアルポートを開く
+    serialOpen(selectSerialPortNum);
+    //シリアルポート選択した、と記憶する
+    serialPortSelect=true;
+    //画面を白で消去
+    background(255);
+  } else {  //シリアルポート選択している場合
+
+    //micro:bitからのデータが空の時
+    if (microbitData==null) {
+      //間違ったポートを開いたとみなし、いったんポートを閉じる
+      serialClose();
+      //シリアルポート未選択とする
+      serialPortSelect=false;
+      //画面を白で消去
+      background(255);
+    }
+  }
+}
+
+
+//シリアルポートを選ぶ画面の表示
+void serialPortSelectScene() {
+  colorMode(RGB);
+  background(0);
+  selectSerialPortNum=-1;
+  for (int i=0; i<serialString.length; i++) {
+    int h = height/serialString.length;
+    if (overRect(0, h*i, width, h)) {
+      //
+      noStroke();
+      fill(255, 255, 255);
+      selectSerialPortNum=i;
+    } else {
+      //
+      stroke(100, 100, 100);
+      noFill();
+    }
+    rect(0, h*i, width-1, h);
+
+    if (selectSerialPortNum==i) {
+      fill(0, 0, 0);
+    } else {
+      fill(255, 255, 255);
+    }
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text(serialString[i], width/2, h/2+h*i);
+  }
+}
+
+//マウスが指定したエリア内に入ったかどうか調べる
+boolean overRect(int x, int y, int width, int height) {
+  if (mouseX >= x && mouseX <= x+width && 
+    mouseY >= y && mouseY <= y+height) {
+    return true;
+  } else {
+    return false;
   }
 }
