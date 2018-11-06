@@ -2,7 +2,7 @@
 int[] microbitData = new int[5];
 
 void storeData(int[] buff) {
-  //bufferのデータが3個揃ったなら、
+  //bufferのデータが5個揃ったなら、
   if (buff.length>=5) {
     //microbitDataに格納する
     microbitData[0] = buff[0];
